@@ -22,6 +22,11 @@ library(ggtree)
 library(aplot)
 ```
 
+# Abstract
+This study investigated if the number of olfactory receptor (OR) genes in various species is linked to their daily activity patterns. Results showed that while functional and non-functional OR gene numbers are correlated, there is no significant association between these gene numbers and the species' activity patterns. Phylogenetic analysis also indicated no significant differences in OR gene numbers between predominantly diurnal primates and nocturnal bats. Thus, no clear link was found between activity patterns and OR gene numbers.
+
+![](activity_pattern.jpg)
+
 # Introduction
 
 There has been progress in understanding olfactory receptor (OR) gene repertoire and species ecology niche and trait [@Hughes2018; @Hayden2010]. It was also hypothesized that the olfactory blub size is related to and nocturnality in birds [@Healy1990]. The OR gene loss was found to be linked to primates’ sensory systems and dietary transition [@Niimura2018]. Furthermore, olfactory processing might have a molecular link to circadian function [@Saleh2015] and nocturnal and diurnal animals may have a difference in functional nasal chemoreceptor based on genomic analysis [@Wang2010].  
@@ -29,17 +34,17 @@ There has been progress in understanding olfactory receptor (OR) gene repertoire
 It is therefore possible that the number of functional OR gene might be linked to what time is a species most active during a day. This analysis is going to investigate if the hypothesis can be true using statistical test and other methods.
 
 # Materials and Methods
-There are 88 species used in this analysis. Their rhythmic activity pattern, number of functional and non-functional OR gene number are provided. There are four activity patterns: diurnal (active during daytime), nocturnal (active during nighttime), crepuscular (active during dawn or dusk), and cathemeral (irregular active time). The five summary statistics were done using the ‘summary’ command in R.  
+There are 88 species used in this analysis. Their rhythmic activity pattern, number of functional and non-functional OR gene number are provided. There are four activity patterns: **diurnal** (active during daytime), **nocturnal** (active during nighttime), **crepuscular** (active during dawn or dusk), and **cathemeral** (irregular active time). The five summary statistics were done using the ‘summary’ command in R.  
 
 K-means clustering was applied separately on the number of functional and non-functional gene. The species with similar gene number will be grouped together by the algorithm. The centroid number from 2 to 4 was tested to run the clustering. This is because the algorithm cannot determine how many underlying clusters there are in the dataset.  
 
-Statistical tests were conducted to analysis the dataset, and alpha level of 0.05 was used as the significance cutoff. First, Shapiro-Wilk test was used to test the normality of functional and non-functional OR gene numbers across all species. The null hypothesis is that the dataset follows normal distribution. This determines if non-parametric statistical tests are needed as normality of the data is required for the parametric ones.  
+Statistical tests were conducted to analysis the dataset, and alpha level of 0.05 was used as the significance cutoff. First, *Shapiro-Wilk test* was used to test the normality of functional and non-functional OR gene numbers across all species. The null hypothesis is that the dataset follows normal distribution. This determines if non-parametric statistical tests are needed as normality of the data is required for the parametric ones.  
 
-Non-parametric tests were used for the following analysis. Spearman correlation test was used to determine if there is an association between the number of functional and non-functional gene. The null hypothesis is that the two gene numbers are not correlated. Kruskal-Wallis test was run on functional gene number against rhythmic activity pattern. To further test if activity pattern is associated with gene number clustering, Fisher’s Exact test was used.  
+Non-parametric tests were used for the following analysis. *Spearman correlation test* was used to determine if there is an association between the number of functional and non-functional gene. The null hypothesis is that the two gene numbers are not correlated. *Kruskal-Wallis test* was run on functional gene number against rhythmic activity pattern. To further test if activity pattern is associated with gene number clustering, *Fisher’s Exact test* was used.  
 
-The species tree was download from NCBI taxonomy. The subspecies Ceratotherium cotton could not be retrieved from NCBI database therefore was removed for the phylogenetic analysis. NCBI uses the basionym Nesogale talazaci was used for Microgale talazaci, the basionym Phataginus tricuspis was used for Manis tricuspis, and the synonym Tupaia chinensis was used for Tupaia belangeria chinensis. They were changed to match the species name in the data provided.  
+The species tree was download from [NCBI taxonomy](https://www.ncbi.nlm.nih.gov/taxonomy/). The subspecies Ceratotherium cotton could not be retrieved from NCBI database therefore was removed for the phylogenetic analysis. NCBI uses the basionym *Nesogale talazaci* was used for *Microgale talazaci*, the basionym *Phataginus tricuspis* was used for *Manis tricuspis*, and the synonym *Tupaia chinensis* was used for *Tupaia belangeria chinensis*. They were changed to match the species name in the data provided.  
 
-The statistical and other analysis were done using R programming language. The figure data created by using ggplot2 package [@Wickham2016] and the visualization of phylogenetic tree was done by ggtree package [@Yu2020]. The code is available on [GitHub](https://github.com/Takkoona/BIOL40540_final_assessment/tree/main).
+The statistical and other analysis were done using R programming language. The figure data created by using ggplot2 package [@Wickham2016] and the visualization of phylogenetic tree was done by ggtree package [@Yu2020].
 
 # Results
 
@@ -87,7 +92,7 @@ p
 
 ## Normality test {.tabset .tabset-fade .tabset-pills}
 
-The gene numbers of non-functional and functional are not normal distributed. The p-values of Shapiro-Wilk test are 2.523×10^(-6) and 6.178×10^(-6), which are both lower than 0.05. This means the null hypothesis that data follow normal distribution are rejected, and neither of the two satisfy normality.
+The gene numbers of non-functional and functional are not normal distributed. The p-values of *Shapiro-Wilk test* are 2.523×10^-6^ and 6.178×10^-6^, which are both lower than 0.05. This means the null hypothesis that data follow normal distribution are rejected, and neither of the two satisfy normality.
 
 ### Functional gene number
 ```{r}
@@ -176,7 +181,7 @@ non_func_gene_kmeans
 
 ## Correlation test
 
-The p value for Spearman correlation test between functional and non-functional gene number is 1.143×10^(-13). The null hypothesis is rejected because it is less than 0.05, and the alternative hypothesis that the two variables are correlated.
+The p value for *Spearman correlation test* between functional and non-functional gene number is 1.143×10^-13^. The null hypothesis is rejected because it is less than 0.05, and the alternative hypothesis that the two variables are correlated.
 
 ```{r}
 cor.test(
@@ -189,7 +194,7 @@ cor.test(
 
 ## Hypothesis test
 
-The p value for Kurskal-Wallis test of functional gene number among the four rhythmic activity patterns is 0.3913. The null hypothesis that there is no statistically significant difference between activity patterns with respect to functional gene number is accepted. And Fisher’s Exact test for activity patterns and k-means clustering of functional gene number, using the contingency Table 2 , is also higher than 0.05 which is 0.265. The null hypothesis that there is no association between activity pattern and the clustering of functional gene number.
+The p value for *Kurskal-Wallis test* of functional gene number among the four rhythmic activity patterns is 0.3913. The null hypothesis that there is no statistically significant difference between activity patterns with respect to functional gene number is accepted. And *Fisher’s Exact test* for activity patterns and k-means clustering of functional gene number, using the contingency Table 2, is also higher than 0.05 which is 0.265. The null hypothesis that there is no association between activity pattern and the clustering of functional gene number.
 
 ```{r}
 normality_test <- function(or_genes, gene_type) {
@@ -223,7 +228,7 @@ knitr::kable(contingency_table, caption = "Table 2 Contingency table for functio
 
 ## Phylogenetic visualization
 
-The phylogenetic tree groups species in their orders and maps the species with their gene numbers. The activity patterns in other orders show higher heterogeneity than Primates and Chiroptera. Primates are mostly Diurnal, while Chiroptera are mostly Nocturnal, and they generally have lower OR gene number than other species. However, the functional gene number of Chiroptera is not significantly different than Primates, with Wilcoxon test p-value of 0.3189.
+The phylogenetic tree groups species in their orders and maps the species with their gene numbers. The activity patterns in other orders show higher heterogeneity than Primates and Chiroptera. Primates are mostly Diurnal, while Chiroptera are mostly Nocturnal, and they generally have lower OR gene number than other species. However, the functional gene number of Chiroptera is not significantly different than Primates, with *Wilcoxon test* p-value of 0.3189.
 
 ```{r}
 species_tree <- read.tree("data/phyliptree.phy")

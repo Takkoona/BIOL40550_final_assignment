@@ -1,0 +1,369 @@
+---
+title: "No clear link found between activity pattern and OR gene numbers"
+author: "Chengyang"
+date: "2024-07-08"
+output:
+  html_document:
+    code_folding: hide
+    number_sections: yes
+    theme: readable
+    highlight: "tango"
+    toc: yes
+    toc_float: true
+bibliography: bibliography.bib
+---
+
+```{r setup, include=FALSE} 
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+library(ggplot2)
+library(data.table)
+library(gridExtra)
+library(ggtree)
+library(aplot)
+```
+
+# Introduction
+
+There has been progress in understanding olfactory receptor (OR) gene repertoire and species ecology niche and trait [@Hughes2018; @Hayden2010]. It was also hypothesized that the olfactory blub size is related to and nocturnality in birds [@Healy1990]. The OR gene loss was found to be linked to primates’ sensory systems and dietary transition [@Niimura2018]. Furthermore, olfactory processing might have a molecular link to circadian function [@Saleh2015] and nocturnal and diurnal animals may have a difference in functional nasal chemoreceptor based on genomic analysis [@Wang2010].  
+
+It is therefore possible that the number of functional OR gene might be linked to what time is a species most active during a day. This analysis is going to investigate if the hypothesis can be true using statistical test and other methods.
+
+# Materials and Methods
+There are 88 species used in this analysis. Their rhythmic activity pattern, number of functional and non-functional OR gene number are provided. There are four activity patterns: diurnal (active during daytime), nocturnal (active during nighttime), crepuscular (active during dawn or dusk), and cathemeral (irregular active time). The five summary statistics were done using the ‘summary’ command in R.  
+
+K-means clustering was applied separately on the number of functional and non-functional gene. The species with similar gene number will be grouped together by the algorithm. The centroid number from 2 to 4 was tested to run the clustering. This is because the algorithm cannot determine how many underlying clusters there are in the dataset.  
+
+Statistical tests were conducted to analysis the dataset, and alpha level of 0.05 was used as the significance cutoff. First, Shapiro-Wilk test was used to test the normality of functional and non-functional OR gene numbers across all species. The null hypothesis is that the dataset follows normal distribution. This determines if non-parametric statistical tests are needed as normality of the data is required for the parametric ones.  
+
+Non-parametric tests were used for the following analysis. Spearman correlation test was used to determine if there is an association between the number of functional and non-functional gene. The null hypothesis is that the two gene numbers are not correlated. Kruskal-Wallis test was run on functional gene number against rhythmic activity pattern. To further test if activity pattern is associated with gene number clustering, Fisher’s Exact test was used.  
+
+The species tree was download from NCBI taxonomy. The subspecies Ceratotherium cotton could not be retrieved from NCBI database therefore was removed for the phylogenetic analysis. NCBI uses the basionym Nesogale talazaci was used for Microgale talazaci, the basionym Phataginus tricuspis was used for Manis tricuspis, and the synonym Tupaia chinensis was used for Tupaia belangeria chinensis. They were changed to match the species name in the data provided.  
+
+The statistical and other analysis were done using R programming language. The figure data created by using ggplot2 package [@Wickham2016] and the visualization of phylogenetic tree was done by ggtree package [@Yu2020]. The code is available on [GitHub](https://github.com/Takkoona/BIOL40540_final_assessment/tree/main).
+
+# Results
+
+## Five summary statistics
+Functional gene number is overall lower, and has a narrower range than non-functional gene number, but they share similar medians. The number ranges from 139 to 1765 for functional genes, and 193 to 2646 for non-functional genes (Table 1). The first and third quantile values are 703 and 917.75 for functional, while 521.5 and 1199.25 for non-functional. Their mean values also have a difference of around 150. However, their median values are similar as the number is 821.5 for functional gene and 826 for non-functional gene.
+
+```{r five_summary_stat}
+or_genes <- read.csv("data/ORgenes.csv")
+or_genes[
+  which(or_genes$Species == "Loxodonta Africana"),
+  "Species"
+] <- "Loxodonta africana"
+
+write.table(
+  or_genes$Species,
+  "data/species.txt",
+  row.names = FALSE,
+  col.names = FALSE,
+  quote = FALSE
+)
+
+func_summary <- summary(or_genes$Functional)
+non_func_summary <- summary(or_genes$NonFuctional)
+
+five_summary_stat <- as.data.frame(cbind(func_summary, non_func_summary))
+knitr::kable(five_summary_stat, caption = "Table 1 Five summary statistics for function and non-functional gene numbers")
+```
+
+Boxplot of the non-functional gene number for a few species is much higher than the other species. It is shown again that the non-functional gene has a wider range in number than the functional.
+
+```{r box_plot}
+or_genes_long <- melt(
+  setDT(or_genes),
+  measure.vars = c("Functional", "NonFuctional")
+)
+
+p <- ggplot(or_genes_long, aes(variable, value)) +
+  geom_boxplot() +
+  xlab("") +
+  ylab("Gene number") +
+  theme_classic()
+
+p
+```
+
+## Normality test {.tabset .tabset-fade .tabset-pills}
+
+The gene numbers of non-functional and functional are not normal distributed. The p-values of Shapiro-Wilk test are 2.523×10^(-6) and 6.178×10^(-6), which are both lower than 0.05. This means the null hypothesis that data follow normal distribution are rejected, and neither of the two satisfy normality.
+
+### Functional gene number
+```{r}
+func_gene_hist <- ggplot(or_genes, aes(Functional, fill = Activity.Pattern)) +
+  geom_histogram(position = "stack") +
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  ggtitle("Functional gene number histogram") +
+  xlab(paste("Shapiro-Wilk test p value", shapiro.test(or_genes$Functional)$p.value))
+
+func_gene_hist
+```
+
+### Non-functional gene number
+```{r}
+non_func_gene_hist <- ggplot(
+  or_genes,
+  aes(NonFuctional, fill = Activity.Pattern)
+) +
+  geom_histogram(position = "stack") +
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  ggtitle("Non-functional gene number histogram") +
+  xlab(paste("Shapiro-Wilk test p value", shapiro.test(or_genes$NonFuctional)$p.value))
+
+non_func_gene_hist
+```
+
+
+## Clustering analysis  {.tabset .tabset-fade .tabset-pills}
+
+The independent k-means clustering based on gene number could not match their rhythmic activity pattern. The results from setting 3 centroids are used as example here. Apart from Crepuscular species which only has three in total, there are often species from at least two clusters in each one of the four rhythmic activity patterns. This is especially true for Diurnal and Nocturnal species as they always have three clusters involved.
+
+### Functional gene number K-means clustering
+```{r}
+set.seed(12345)
+
+run_kmeans <- function(or_genes, n_cluster, gene_type) {
+  cluster_res <- kmeans(or_genes[, gene_type], n_cluster)
+  res <- cbind(
+    or_genes,
+    paste0("cluster_", as.character(cluster_res$cluster))
+  )
+  colnames(res) <- c(colnames(or_genes), "Cluster")
+  return(res)
+}
+
+plot_kmeans_result <- function(clustered_or_genes) {
+  df <- table(clustered_or_genes[, c("Activity.Pattern", "Cluster")])
+  df <- as.data.frame(df)
+  heatmap_plot <- ggplot(df, aes(
+    Cluster,
+    Activity.Pattern,
+    fill = Freq
+  )) +
+    geom_tile() +
+    geom_text(aes(label = Freq)) +
+    scale_fill_gradient(low = "white", high = "red")
+  bar_plot <- ggplot(df, aes(Activity.Pattern, Freq, fill = Cluster)) +
+    geom_bar(stat = "identity") +
+    theme_classic() +
+    theme(plot.title = element_text(hjust = 0.5))
+  p <- bar_plot
+  return(p)
+}
+
+or_genes <- as.data.frame(or_genes)
+
+functional_genes <- run_kmeans(or_genes, 3, "Functional")
+func_gene_kmeans <- plot_kmeans_result(functional_genes) +
+  ggtitle("Functional gene number kmeans clustering")
+
+func_gene_kmeans
+
+```
+
+### Non-functional gene number K-means clustering
+```{r}
+non_functional_genes <- run_kmeans(or_genes, 3, "NonFuctional")
+non_func_gene_kmeans <- plot_kmeans_result(non_functional_genes) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  ggtitle("Non-functional gene number kmeans clustering")
+
+non_func_gene_kmeans
+```
+
+## Correlation test
+
+The p value for Spearman correlation test between functional and non-functional gene number is 1.143×10^(-13). The null hypothesis is rejected because it is less than 0.05, and the alternative hypothesis that the two variables are correlated.
+
+```{r}
+cor.test(
+  or_genes$Functional,
+  or_genes$NonFuctional,
+  method = "spearman",
+  exact = FALSE
+)
+```
+
+## Hypothesis test
+
+The p value for Kurskal-Wallis test of functional gene number among the four rhythmic activity patterns is 0.3913. The null hypothesis that there is no statistically significant difference between activity patterns with respect to functional gene number is accepted. And Fisher’s Exact test for activity patterns and k-means clustering of functional gene number, using the contingency Table 2 , is also higher than 0.05 which is 0.265. The null hypothesis that there is no association between activity pattern and the clustering of functional gene number.
+
+```{r}
+normality_test <- function(or_genes, gene_type) {
+  values <- or_genes[c("Activity.Pattern", gene_type)]
+  values <- split(values, values$Activity.Pattern)
+  res <- lapply(values, function(i) {
+    shapiro.test(i[, gene_type])
+  })
+  return(res)
+}
+
+
+normality_test_res <- normality_test(or_genes, "Functional")
+# for (pat in names(normality_test_res)) {
+#   cat(pat, "\n")
+#   print(normality_test_res[[pat]])
+# }
+kruskal.test(Activity.Pattern ~ Functional, data = or_genes)
+```
+
+```{r}
+contingency_table <- table(functional_genes[c("Activity.Pattern", "Cluster")])
+fisher.test(contingency_table)
+write.csv(
+  contingency_table,
+  "data/cluster_contingency.csv",
+  quote = FALSE
+)
+knitr::kable(contingency_table, caption = "Table 2 Contingency table for functional gene number between activity pattern and clustering result")
+```
+
+## Phylogenetic visualization
+
+The phylogenetic tree groups species in their orders and maps the species with their gene numbers. The activity patterns in other orders show higher heterogeneity than Primates and Chiroptera. Primates are mostly Diurnal, while Chiroptera are mostly Nocturnal, and they generally have lower OR gene number than other species. However, the functional gene number of Chiroptera is not significantly different than Primates, with Wilcoxon test p-value of 0.3189.
+
+```{r}
+species_tree <- read.tree("data/phyliptree.phy")
+species_tree$tip.label <- as.vector(noquote(gsub(
+  "\'",
+  "",
+  species_tree$tip.label,
+  fixed = TRUE
+)))
+basionym_and_synonym <- list(
+  c("Nesogale talazaci", "Microgale talazaci"),
+  c("Phataginus tricuspis", "Manis tricuspis"),
+  c("Tupaia chinensis", "Tupaia belangeri chinensis")
+)
+for (i in basionym_and_synonym) {
+  species_tree$tip.label[which(species_tree$tip.label == i[1])] <- i[2]
+}
+
+order_list <- c(
+  "Rodentia",
+  "Artiodactyla",
+  "Primates",
+  "Perissodactyla",
+  "Carnivora",
+  "Chiroptera",
+  "Eulipotyphla",
+  "Pilosa",
+  "Cingulata",
+  "Tupaia"
+)
+
+species_order <- sapply(order_list, function(i) {
+  tips <- species_tree$tip.label[tidytree::offspring(species_tree, i)]
+  tips[!is.na(tips)]
+})
+other_mammals <- setdiff(
+  species_tree$tip.label,
+  unlist(species_order)
+)
+write.table(
+  other_mammals,
+  "data/other_mammals.txt",
+  row.names = FALSE,
+  col.names = FALSE,
+  quote = FALSE
+)
+species_order[["Other_mammals"]] <- other_mammals
+
+missing_order <- data.frame(
+  "values" = "Ceratotherium cottoni",
+  "ind" = "Perissodactyla"
+)
+order_values <- rbind(stack(species_order), missing_order)
+colnames(order_values) <- c("Species", "Order")
+or_genes_with_order <- merge(or_genes, order_values, by = "Species")
+
+no_missing_value <- or_genes_with_order[
+  which(!or_genes_with_order$Species == "Ceratotherium cottoni"),
+]
+
+no_missing_value[["Gene_repetoire"]] <- no_missing_value[["Functional"]] +
+  no_missing_value[["NonFuctional"]]
+
+tree_with_group <- groupOTU(
+  species_tree,
+  species_order,
+  group_name = "species_order"
+)
+
+group_by_activity <- split(
+  no_missing_value$Species, no_missing_value$Activity.Pattern
+)
+
+tree_with_activity <- groupOTU(
+  tree_with_group,
+  group_by_activity,
+  group_name = "activity"
+)
+
+order_colors <- list(
+  "red",
+  "blue",
+  "dark green",
+  "orange",
+  "purple",
+  "magenta",
+  "navy",
+  "green",
+  "cyan",
+  "dark blue",
+  "dark grey"
+)
+names(order_colors) <- names(species_order)
+
+g <- ggtree(tree_with_activity, aes(color = species_order)) +
+  geom_tiplab(align = TRUE) +
+  xlim(0, 25) +
+  scale_color_manual(values = order_colors) +
+  theme(
+    legend.title = element_text(size = 14),
+    legend.text = element_text(size = 10)
+  )
+
+func_gene_bar_plot <- ggplot(
+  no_missing_value,
+  aes(Functional, Species, fill = Activity.Pattern)
+) +
+  geom_col() +
+  scale_x_reverse() +
+  theme(
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+  )
+
+non_func_gene_bar_plot <- ggplot(
+  no_missing_value,
+  aes(NonFuctional, Species, fill = Activity.Pattern)
+) +
+  geom_col() +
+  theme(
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()
+  )
+
+
+p <- func_gene_bar_plot %>%
+  insert_left(g) %>%
+  insert_right(non_func_gene_bar_plot)
+
+p
+```
+
+# Discussion
+There is a link between the number of functional and non-functional gene. It can be observed when the numbers are compared against each other and the correlation test confirms there is an association between the two.  
+
+The clustering analysis and statistical test both show no clear association between rhythmic activity pattern and OR gene numbers. The distribution gene number can already indicate a certain level of heterogeneity of activity patterns against both functional and non-functional gene number. It can be further confirmed by the k-means clustering result. The example of primates and bat further shows that Nocturnal species do not have higher number of functional OR gene than a majorly Diurnal species.  
+
+The association between OR gene number and rhythmic activity might be lineage-specific but the data here is not sufficient for a robust lineage-specific analysis.
+
+
+# References

@@ -1,0 +1,147 @@
+(
+'Galeopterus variegatus':4,
+'Phataginus tricuspis':4,
+(
+'Tupaia chinensis':4,
+'Tupaia tana':4
+)Tupaia:4,
+(
+'Nomascus leucogenys':4,
+'Pithecia pithecia':4,
+(
+'Piliocolobus tephrosceles':4,
+'Semnopithecus entellus':4,
+(
+'Rhinopithecus roxellana':4,
+'Rhinopithecus bieti':4
+)Rhinopithecus:4,
+'Pygathrix nemaeus':4,
+'Colobus angolensis':4,
+'Nasalis larvatus':4,
+'Cercopithecus neglectus':4
+)Cercopithecidae:4,
+'Daubentonia madagascariensis':4
+)Primates:4,
+(
+'Zapus hudsonius':4,
+'Dinomys branickii':4,
+'Graphiurus murinus':4,
+'Castor canadensis':4,
+'Dasyprocta punctata':4,
+'Cavia porcellus':4,
+'Cricetomys gambianus':4,
+(
+'Rattus norvegicus':4,
+(
+'Mus spretus':4,
+'Mus pahari':4,
+'Mus musculus':4,
+'Mus caroli':4
+)Mus:4,
+'Acomys cahirinus':4
+)Muridae:4,
+(
+'Microtus ochrogaster':4,
+'Sigmodon hispidus':4,
+'Peromyscus maniculatus':4,
+'Cricetulus griseus':4
+)Cricetidae:4,
+'Dipodomys ordii':4,
+(
+'Spermophilus dauricus':4,
+'Ictidomys tridecemlineatus':4,
+'Marmota marmota':4
+)Sciuridae:4
+)Rodentia:4,
+(
+'Catagonus wagneri':4,
+(
+'Bubalus bubalis':4,
+'Ovis aries':4,
+(
+'Capra hircus':4,
+'Capra aegagrus':4
+)Capra:4,
+(
+'Bos mutus':4,
+'Bos indicus':4,
+'Bos taurus':4
+)Bos:4,
+'Bison bison':4,
+'Ammotragus lervia':4
+)Bovidae:4,
+(
+'Elaphurus davidianus':4,
+'Odocoileus virginianus':4,
+'Rangifer tarandus':4
+)Cervidae:4,
+'Tragulus javanicus':4,
+'Hippopotamus amphibius':4,
+'Sus scrofa':4
+)Artiodactyla:4,
+'Orycteropus afer':4,
+(
+(
+'Dicerorhinus sumatrensis':4,
+'Ceratotherium simum':4,
+'Diceros bicornis':4
+)Rhinocerotidae:4,
+(
+'Tapirus indicus':4,
+'Tapirus terrestris':4
+)Tapirus:4,
+(
+'Equus przewalskii':4,
+'Equus caballus':4,
+'Equus asinus':4
+)Equus:4
+)Perissodactyla:4,
+'Loxodonta africana':4,
+(
+'Paradoxurus hermaphroditus':4,
+(
+'Mungos mungo':4,
+'Helogale parvula':4,
+'Suricata suricatta':4
+)Herpestidae:4,
+'Spilogale gracilis':4,
+'Ursus maritimus':4,
+'Mustela putorius':4
+)Carnivora:4,
+(
+'Craseonycteris thonglongyai':4,
+(
+'Rhinolophus sinicus':4,
+'Rhinolophus ferrumequinum':4
+)Rhinolophus:4,
+(
+'Mormoops blainvillei':4,
+'Pteronotus parnellii':4
+)Mormoopidae:4,
+'Hipposideros galeritus':4,
+'Megaderma lyra':4
+)Chiroptera:4,
+(
+'Nesogale talazaci':4,
+'Echinops telfairi':4
+)Tenrecidae:4,
+(
+'Solenodon paradoxus':4,
+'Scalopus aquaticus':4,
+'Erinaceus europaeus':4
+)Eulipotyphla:4,
+(
+'Tolypeutes matacus':4,
+'Dasypus novemcinctus':4
+)Cingulata:4,
+(
+(
+'Myrmecophaga tridactyla':4,
+'Tamandua tetradactyla':4
+)Myrmecophagidae:4,
+(
+'Choloepus didactylus':4,
+'Choloepus hoffmanni':4
+)Choloepus:4
+)Pilosa:4
+)Mammalia:4;
